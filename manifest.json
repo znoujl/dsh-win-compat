@@ -1,9 +1,9 @@
 {
-  "id": "dsh-win-compat",
+  "id": "com.znoujl.wincompat",
   "name": "DSH Windows 兼容性守护者",
   "version": "0.2.0",
-  "kind": "bundle",
-  "entry": "index.js",
-  "bundle": "./cordis.patch.yml",
-  "description": "Windows 兼容体检与自动修复插件"
+  "entry": {
+    "server": "index.js"
+  },
+  "tags": ["windows", "compatibility", "doctor"]
 }

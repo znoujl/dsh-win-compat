@@ -172,10 +172,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-in-real-dsh.p
 - 仓库：<https://github.com/znoujl/dsh-win-compat>（`main` 已同步）
 - 市场文案：[docs/marketplace.md](docs/marketplace.md)（安装/体检命令、短描述、长描述、关键词、企业卖点）
 - 清单文件（均随 `package.json#files` 发布）：
-  - [`plugin.json`](plugin.json)：标准市场清单，含 `id` / `name` / `version` / `entry: index.js`；
-  - [`manifest.json`](manifest.json)：Bundle 清单，含 `id` / `name` / `version` / `entry: index.js`，并用 `bundle: ./cordis.patch.yml` 保留补丁入口；
+  - [`plugin.json`](plugin.json) 与 [`manifest.json`](manifest.json) 内容一致：`id: com.znoujl.wincompat`、`entry: { server: index.js }`、`tags: [windows, compatibility, doctor]`（tags 仅小写字母/数字/连字符）；
+  - 插件是 host-only（无 client 入口），所以 `entry` 只声明 `server`；如以后增加 Web 端再补 `client`；
   - `package.json` 的 `dsh.bundle.patch` 指向 [`cordis.patch.yml`](cordis.patch.yml)，这是 DSH 实际加载的入口；
-  - [`index.js`](index.js) 是标准 entry，re-export `lib/index.js`，两种入口指向同一插件实现。
+  - [`index.js`](index.js) 是 server entry，re-export `lib/index.js`，两种入口指向同一插件实现。
 - 打 tag / Release：
 
 ```powershell
@@ -189,9 +189,9 @@ git push origin v0.2.0
 dsh-win-compat/
 ├─ package.json                 # dsh.bundle.patch + dshhub 市场元数据
 ├─ cordis.patch.yml             # insert: win-compat 行 + 默认配置
-├─ index.js                     # 标准 entry：re-export lib/index.js
-├─ plugin.json                  # 市场清单：id/name/version/entry
-├─ manifest.json                # Bundle 清单：id/name/version/entry + bundle patch
+├─ index.js                     # server entry：re-export lib/index.js
+├─ plugin.json                  # 市场清单：id=com.znoujl.wincompat, entry.server, tags
+├─ manifest.json                # 同 plugin.json（dshhub 市场校验用）
 ├─ lib/
 │  ├─ index.js                  # 插件入口 name/inject/apply（ctx.effect 清理）
 │  ├─ repair.js                 # shim 检测/修复/复验（只写 shim）

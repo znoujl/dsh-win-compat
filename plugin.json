@@ -1,0 +1,6 @@
+{
+  "id": "dsh-win-compat",
+  "name": "DSH Windows 兼容性守护者",
+  "version": "0.2.0",
+  "entry": "index.js"
+}

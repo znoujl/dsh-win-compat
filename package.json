@@ -27,6 +27,8 @@
     "scripts",
     "docs",
     "cordis.patch.yml",
+    "index.js",
+    "plugin.json",
     "manifest.json",
     "README.md",
     "LICENSE"

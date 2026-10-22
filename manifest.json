@@ -1,7 +1,9 @@
 {
-  "name": "dsh-win-compat",
+  "id": "dsh-win-compat",
+  "name": "DSH Windows 兼容性守护者",
   "version": "0.2.0",
   "kind": "bundle",
-  "entry": "./cordis.patch.yml",
+  "entry": "index.js",
+  "bundle": "./cordis.patch.yml",
   "description": "Windows 兼容体检与自动修复插件"
 }

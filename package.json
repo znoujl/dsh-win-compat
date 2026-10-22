@@ -1,0 +1,79 @@
+{
+  "name": "dsh-win-compat",
+  "version": "0.2.0",
+  "description": "DeepSeek Harness 的零依赖 Windows 兼容守护：启动/运行期修复 pnpm shim 编码，并提供只读诊断矩阵与 HTML/JSON 体检报告（Node、DSH 版本、Koffi、PowerShell、工作区、路径、shim）。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./repair": {
+      "default": "./lib/repair.js"
+    },
+    "./diagnostics": {
+      "default": "./lib/diagnostics.js"
+    },
+    "./report": {
+      "default": "./lib/report.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "dsh-win-compat": "./lib/cli.js"
+  },
+  "files": [
+    "lib",
+    "scripts",
+    "docs",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dshhub": {
+    "schemaVersion": 1,
+    "displayName": "Windows 兼容守护",
+    "summary": "只读体检 + 自动修复：pnpm shim 代码页、目录选择器版本边界、Koffi/PowerShell/工作区/路径风险，一键导出 HTML/JSON 报告。",
+    "categories": [
+      "系统",
+      "诊断",
+      "Windows"
+    ],
+    "surfaces": [
+      "host"
+    ],
+    "compatibility": {
+      "dsh": ">=0.1.2-alpha.1 <0.3.0-0",
+      "node": ">=20"
+    },
+    "capabilities": {
+      "provides": [
+        "diagnostics:windows-compat"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "windows",
+    "chcp",
+    "pnpm",
+    "encoding",
+    "diagnostics",
+    "health-check",
+    "koffi"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "node test/run.mjs"
+  }
+}

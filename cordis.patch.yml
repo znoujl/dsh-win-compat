@@ -1,0 +1,9 @@
+# dsh-win-compat bundle patch: one host row, no config required.
+# The row name resolves from the profile's own node_modules, where
+# `dsh plugin --profile desktop add <spec>` installs this package.
+- insert:
+    - id: win-compat
+      name: dsh-win-compat
+      config:
+        startupDelayMs: 3000
+        watch: true

@@ -1,0 +1,7 @@
+node_modules/
+test/.tmp/
+*.log
+doctor-report.html
+doctor-report.json
+doctor-report.png
+.DS_Store

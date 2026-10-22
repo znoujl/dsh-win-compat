@@ -40,14 +40,22 @@ HTML 报告中“未运行”单独成节，只使用灰色标记；汇总与退
 
 ## 安装
 
-用 Desktop 自带 CLI 装入当前 profile（写入 `dependencies` 与 `dsh.profile.bundles`）：
+用 Desktop 自带 CLI 装入 **desktop** profile（`web` 只是界面 profile，装到 `web` 不会进入 Desktop 应用）：
+
+从 GitHub 安装（需要本机有 Git）：
 
 ```powershell
 $cli = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
-& $cli plugin --profile desktop add "file:C:/Users/anon/Documents/deepseek-harness/default-workspace/dsh-win-compat"
+& $cli plugin --profile desktop add "https://github.com/znoujl/dsh-win-compat.git"
 ```
 
-Desktop 支持配置热重组，通常安装后即生效；若你的环境关闭了 HMR，**完全退出并重启 DeepSeek Harness** 后加载。
+从本地源码安装（把 `<仓库绝对路径>` 换成实际目录）：
+
+```powershell
+& $cli plugin --profile desktop add "file:<仓库绝对路径>"
+```
+
+安装会写入 profile 的 `dependencies` 与 `dsh.profile.bundles`。Desktop 支持配置热重组，通常安装后即生效；若你的环境关闭了 HMR，**完全退出并重启 DeepSeek Harness** 后加载。
 
 卸载：
 
@@ -61,14 +69,21 @@ Desktop 支持配置热重组，通常安装后即生效；若你的环境关闭
 
 ## doctor 使用
 
+`doctor` 是插件自带的 CLI，**不是** `dsh` 的子命令（`dsh doctor` 会把 doctor 当成 profile 名并报错）。用 DSH 自带 node 运行：
+
 ```powershell
 $node = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\primary-runtime\dependencies\node\bin\node.exe"
-$doc  = "C:\path\to\dsh-win-compat\lib\cli.js"
+$doc  = "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-win-compat\lib\cli.js"
+
+# DSH_HOME 不是默认目录时改用：
+# $doc = "$env:DSH_HOME\profiles\desktop\node_modules\dsh-win-compat\lib\cli.js"
 
 & $node $doc doctor                     # 终端体检
 & $node $doc doctor --json              # 机器可读（CI/CD）
 & $node $doc doctor --html report.html  # 专业 HTML 报告（默认 dsh-win-compat-report.html）
 ```
+
+> 安装后 profile 里也会生成 `profiles/desktop/node_modules/.bin/dsh-win-compat.CMD`，可直接运行 `& ...\.bin\dsh-win-compat.CMD doctor --html report.html`。
 
 常用参数：`--dsh-home <path>`、`--workspace <path>`、`--install-root <path|none>`、`--include-path`、`--extra-shim <path>`。
 
@@ -154,21 +169,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-in-real-dsh.p
 
 ## 上架与开源
 
-- 市场文案：[docs/marketplace.md](docs/marketplace.md)（短描述、长描述、关键词、企业卖点）
-- Bundle 格式：`package.json` 中 `dsh.bundle.patch` 指向 [`cordis.patch.yml`](cordis.patch.yml)，市场安装后自动选中
-- GitHub 开源步骤：
+- 仓库：<https://github.com/znoujl/dsh-win-compat>（`main` 已同步）
+- 市场文案：[docs/marketplace.md](docs/marketplace.md)（安装/体检命令、短描述、长描述、关键词、企业卖点）
+- Bundle 格式：
+  - `package.json` 的 `dsh.bundle.patch` 指向 [`cordis.patch.yml`](cordis.patch.yml)，市场安装后自动选中；
+  - [`manifest.json`](manifest.json) 声明 `kind: bundle`、`entry: ./cordis.patch.yml`，并已加入 `package.json` 的 `files`，发布时两者都会带上。
+- 打 tag / Release：
 
 ```powershell
-cd dsh-win-compat
-git init
-git add .
-git commit -m "feat: Windows 兼容守护 0.2.0（诊断矩阵 + HTML/JSON 体检报告）"
-git branch -M main
-git remote add origin https://github.com/<your-org>/dsh-win-compat.git
-git push -u origin main
+git tag v0.2.0
+git push origin v0.2.0
 ```
-
-上架 npm 后，把 README 安装命令换成 `dsh-win-compat` 包名即可。
 
 ## 目录结构
 
@@ -176,6 +187,7 @@ git push -u origin main
 dsh-win-compat/
 ├─ package.json                 # dsh.bundle.patch + dshhub 市场元数据
 ├─ cordis.patch.yml             # insert: win-compat 行 + 默认配置
+├─ manifest.json                # 市场清单：kind=bundle，entry=cordis.patch.yml
 ├─ lib/
 │  ├─ index.js                  # 插件入口 name/inject/apply（ctx.effect 清理）
 │  ├─ repair.js                 # shim 检测/修复/复验（只写 shim）

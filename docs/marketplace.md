@@ -8,12 +8,38 @@ Windows 兼容守护：只读体检 + 自动修复。检测 pnpm shim 代码页�
 
 **装一次，Windows 上的编码与路径坑不再静默失败；体检报告可直接交给 IT 和企业客户。**
 
+## 安装（DSH Desktop）
+
+```powershell
+$cli = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
+& $cli plugin --profile desktop add "https://github.com/znoujl/dsh-win-compat.git"
+```
+
+- profile 必须是 **`desktop`**（Desktop 应用实际运行的 profile），不是 `web`；Web 只是界面，装到 `web` 不会进入当前应用。
+- 从 GitHub 安装需要本机有 Git；没有 Git 时，把仓库下载到本地后用 `& $cli plugin --profile desktop add "file:<仓库绝对路径>"`。
+- 安装后通常热生效；若环境关闭了 HMR，需**完整退出并重启 DeepSeek Harness**。
+
+## 使用（插件自带 CLI）
+
+`doctor` **不是** `dsh` 的子命令（`dsh doctor` 会把 doctor 当成 profile 名并报错），要用安装后的插件 CLI：
+
+```powershell
+$node = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\primary-runtime\dependencies\node\bin\node.exe"
+$doc  = "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-win-compat\lib\cli.js"
+
+& $node $doc doctor                     # 终端体检
+& $node $doc doctor --json              # 结构化数据（CI/CD）
+& $node $doc doctor --html report.html  # 专业 HTML 报告
+```
+
+> 如果 `DSH_HOME` 不在默认的 `%USERPROFILE%\.dsh`，把 `$doc` 换成 `$env:DSH_HOME\profiles\desktop\node_modules\dsh-win-compat\lib\cli.js`。
+
 ## 长描述（市场详情页）
 
 DeepSeek Harness 在 Windows 上最常见的两类事故，往往都发生在“看不见”的地方：
 
-- 选中文目录时路径被静默截断（「软件开发」变成「软件」）；
-- 生成的 pnpm 启动脚本以 UTF-8 写入，cmd.exe 却按 GBK 读取，报“系统找不到指定的路径”。
+- 选中文目录时路径被静默截断（「软件开发」变成「软件」）——这是目录选择器核心解码问题，**DSH ≥ 0.1.2-alpha.1 已原生修复**；本插件负责版本判定并在旧版上提示风险。
+- 生成的 pnpm 启动脚本以 UTF-8 写入，cmd.exe 却按 GBK 读取，报“系统找不到指定的路径”——由本插件在启动和运行期自动修复。
 
 `dsh-win-compat` 不替换核心文件，而是做两件事：
 
